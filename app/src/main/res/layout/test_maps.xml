@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RadioGroup
+        android:id="@+id/map_style_selection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/hybrid_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hybrid"/>
+        <RadioButton
+            android:id="@+id/satellite_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Satellite"/>
+        <RadioButton
+            android:id="@+id/normal_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal"/>
+
+
+    </RadioGroup>
+    <fragment
+        android:id="@+id/map"
+        android:layout_below="@+id/map_style_selection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.MapFragment"/>
+
+</RelativeLayout>
