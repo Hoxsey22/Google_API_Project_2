@@ -10,6 +10,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -62,6 +64,7 @@ public class MainActivity extends Activity {
     public double MPS_CONVERSION_MPH = 0.44704;
     public WifiManager wifiManager;
     public WifiReceiver wifiReceiver;
+    public ImageView wifiIcon;
 
 
     @Override
@@ -69,6 +72,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        speedTextView = (TextView) findViewById(R.id.speed);
+        wifiIcon = (ImageView) findViewById(R.id.wifi_icon);
         locationTextView = (TextView) findViewById(R.id.location);
         mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         mMap.setMyLocationEnabled(true);
@@ -150,9 +155,9 @@ public class MainActivity extends Activity {
         }
     }
     public void displayLocation(Location location)    {
-
+        checkWifi();
         locationTextView.setText("Latitude: " + location.getLatitude()
-                + " Longitude: " + location.getLongitude());
+                + "\nLongitude: " + location.getLongitude());
         if(location.getLongitude() != 0 && location.getLatitude() != 0 && lastLatitude !=0 && lastLongitude != 0) {
             LatLng mapCenter = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -160,7 +165,7 @@ public class MainActivity extends Activity {
             currentTime = location.getTime();
 
             findSpeed(location.getLatitude(),location.getLongitude(), lastLatitude, lastLongitude,lastTime,currentTime);
-          //  speedTextView.setText("Speed: "+speed);
+            speedTextView.setText("Speed: "+(Math.round(speed*100.0)/100.0)+" MPH");
 
             polylineOptions = new PolylineOptions().geodesic(true)
                     .add(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(lastLatitude, lastLongitude))
@@ -283,15 +288,24 @@ public class MainActivity extends Activity {
 
     public void checkWifi()  {
         List<ScanResult> scanResults = wifiManager.getScanResults();
-        for(int i= 0; i < scanResults.size(); i++)  {
-            Log.i("WIFI state:",scanResults.get(i).toString());
+        if(scanResults != null || scanResults.size() != 0) {
+            wifiIcon.setImageResource(R.drawable.full_service_wifi);
         }
+        else
+            wifiIcon.setImageResource(R.drawable.full_wifi);
+
+        if(!wifiManager.isWifiEnabled())   {
+            wifiIcon.setImageResource(R.drawable.full_wifi);
+        }
+
     }
 
     class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
         }
     }
+
+    
 
 
 }
