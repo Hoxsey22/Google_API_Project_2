@@ -1,8 +1,13 @@
 package com.example.joseph.maps;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -14,11 +19,13 @@ import android.media.Image;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -41,7 +48,7 @@ import java.util.List;
 import java.util.Locale;
 
 //222test commit
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     private GoogleMap mMap;
     private GroundOverlayOptions overlay;
@@ -65,12 +72,17 @@ public class MainActivity extends Activity {
     public WifiManager wifiManager;
     public WifiReceiver wifiReceiver;
     public ImageView wifiIcon;
+    public FragmentManager fragMngr = getFragmentManager();
+    public ProgressBar progressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TermOfUseDialogFragment term = new TermOfUseDialogFragment();
+        term.show(fragMngr,"term of service");
 
         speedTextView = (TextView) findViewById(R.id.speed);
         wifiIcon = (ImageView) findViewById(R.id.wifi_icon);
@@ -154,6 +166,7 @@ public class MainActivity extends Activity {
                 break;
         }
     }
+
     public void displayLocation(Location location)    {
         checkWifi();
         locationTextView.setText("Latitude: " + location.getLatitude()
@@ -304,8 +317,4 @@ public class MainActivity extends Activity {
         public void onReceive(Context c, Intent intent) {
         }
     }
-
-    
-
-
 }
