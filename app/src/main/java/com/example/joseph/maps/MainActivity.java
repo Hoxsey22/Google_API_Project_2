@@ -1,13 +1,8 @@
 package com.example.joseph.maps;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -15,35 +10,24 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,12 +58,31 @@ public class MainActivity extends FragmentActivity {
     public ImageView wifiIcon;
     public FragmentManager fragMngr = getFragmentManager();
     public ProgressBar progressBar;
+    public LatLng mapCenter;
+    public ImageButton followButton;
+    public boolean follow = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        followButton = (ImageButton) findViewById(R.id.follow_button);
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!follow) {
+                    follow = true;
+                    followButton.setImageResource(R.drawable.onclick_follow_icon);
+                    onFollow(new LatLng(lastLatitude,lastLongitude));
+                }
+                else {
+                    follow = false;
+                    followButton.setImageResource(R.drawable.follow_icon);
+                }
+            }
+        });
 
         TermOfUseDialogFragment term = new TermOfUseDialogFragment();
         term.show(fragMngr,"term of service");
@@ -145,7 +148,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void onRadioButtonClicked(View view) {
-
         boolean checked = ((RadioButton) view).isChecked();
 
         switch(view.getId()) {
@@ -167,12 +169,18 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    public void onFollow(LatLng latLng)   {
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
     public void displayLocation(Location location)    {
         checkWifi();
+
         locationTextView.setText("Latitude: " + location.getLatitude()
                 + "\nLongitude: " + location.getLongitude());
+
         if(location.getLongitude() != 0 && location.getLatitude() != 0 && lastLatitude !=0 && lastLongitude != 0) {
-            LatLng mapCenter = new LatLng(location.getLatitude(), location.getLongitude());
+            mapCenter = new LatLng(location.getLatitude(), location.getLongitude());
 
             lastTime = currentTime;
             currentTime = location.getTime();
@@ -184,11 +192,14 @@ public class MainActivity extends FragmentActivity {
                     .add(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(lastLatitude, lastLongitude))
                     .width(25)
                     .color(setPolyLineColor(speed));
+            if(follow)  {
+                onFollow(mapCenter);
+            }
 
 
             mMap.addPolyline(polylineOptions);
         }   else    {
-            LatLng mapCenter = new LatLng(location.getLatitude(), location.getLongitude());
+            mapCenter = new LatLng(location.getLatitude(), location.getLongitude());
 
             currentTime = location.getTime();
             lastTime = location.getTime();
@@ -198,7 +209,7 @@ public class MainActivity extends FragmentActivity {
                     .width(25)
                     .color(Color.RED);
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, 50));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter,20));
             mMap.addPolyline(polylineOptions);
         }
         lastLatitude = location.getLatitude();

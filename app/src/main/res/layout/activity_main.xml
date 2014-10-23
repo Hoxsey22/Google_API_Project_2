@@ -3,19 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@android:style/Widget.ProgressBar.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
 
     <fragment
         android:id="@+id/map"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:name="com.google.android.gms.maps.MapFragment"/>
+
+    <ImageButton
+        android:id="@+id/follow_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifi_icon"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/abc_ab_transparent_dark_holo"
+        android:src="@drawable/follow_icon"
+        android:onClick=""/>
+
     <RadioGroup
         android:id="@+id/map_style_selection"
         android:layout_width="wrap_content"
